@@ -20,6 +20,7 @@ const Styles = {
 
 const converter = new showdown.Converter();
 
+// TODO : auto focus
 const MarkdownEditor = React.createClass({
   getInitialState() {
     return {
@@ -37,21 +38,37 @@ const MarkdownEditor = React.createClass({
     this.showViewer();
     ipcRenderer.send('save-content-to-file', { text: this.state.text });
   },
+  componentDidMount() {
+    this.textareaRef.focus();
+  },
   handleKeyDown(e) {
+    if (e.keyCode === 27) { // z
+      this.showViewer();
+    }
     if (e.metaKey || e.ctrlKey) {
-      console.log(e.keyCode)
-      if (e.keyCode === 83) {
+      if (e.keyCode === 83) { // s
         this.save();
       }
-      if (e.keyCode === 90) {
-        this.showViewer();
+      if (e.keyCode === 65) { // a
+        // TODO
+      }
+      if (e.keyCode === 88) { // x
+        // TODO
+      }
+      if (e.keyCode === 67) { // c
+        // TODO
+      }
+      if (e.keyCode === 86) { // v
+        // TODO
       }
     }
   },
   render() {
     return (
-      <div onKeyDown={this.handleKeyDown} style={{ width: '100%', height: '100%' }}>
+      <div style={{ width: '100%', height: '100%' }}>
         <textarea
+          ref={(ref) => this.textareaRef = ref}
+          onKeyDown={this.handleKeyDown} 
           style={Styles.textarea}
           onChange={this.handleChange}
           value={this.state.text}></textarea>

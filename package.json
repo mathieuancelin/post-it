@@ -12,9 +12,9 @@
     "cleanup": "rm -rf dist && rm -rf app",
     "build-dist": "npm run prepare-build && npm run build-mac && npm run build-win && npm run build-linux && rm -rf app",
     "prepare-build": "npm run cleanup && mkdir app && cp package.json app && cp -r src app && cp -r node_modules app",
-    "build-win": "electron-packager app PostIt --out=dist --platform=win32 --arch=x64 --version=0.37.5 --asar=true --cache=./cache --name=PostIt --overwrite=true",
-    "build-mac": "electron-packager app PostIt --out=dist --platform=darwin --arch=x64 --version=0.37.5 --asar=true --icon=./src/es6/static/notepad --cache=./cache --name=PostIt --overwrite=true",
-    "build-linux": "electron-packager app PostIt --out=dist --platform=linux --arch=x64 --version=0.37.5 --asar=true --icon=./src/es6/static/notepad --cache=./cache --name=PostIt --overwrite=true"
+    "build-win": "electron-packager app PostIt --out=dist --platform=win32 --arch=x64 --version=1.2.7 --asar=true --download.cache=./cache --name=PostIt --overwrite=true",
+    "build-mac": "electron-packager app PostIt --out=dist --platform=darwin --arch=x64 --version=1.2.7 --asar=true --icon=./src/es6/static/notepad --download.cache=./cache --name=PostIt --overwrite=true",
+    "build-linux": "electron-packager app PostIt --out=dist --platform=linux --arch=x64 --version=1.2.7 --asar=true --icon=./src/es6/static/notepad --download.cache=./cache --name=PostIt --overwrite=true"
   },
   "keywords": [
     "electron",
