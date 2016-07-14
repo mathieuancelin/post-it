@@ -1,0 +1,44 @@
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title></title>
+    <style>
+      body {
+        font-family: Menlo, Consolas, 'DejaVu Sans Mono', monospace;
+        background-color: rgb(40, 44, 52);
+        overflow-x: hidden;
+        margin: 0;
+        padding: 10;
+      }
+      textarea {
+        font-family: Menlo, Consolas, 'DejaVu Sans Mono', monospace;
+        font-size: 14px;
+        border: none;
+        resize: none;
+      }
+      textarea:focus {
+          outline: none !important;
+      }
+      #app {
+        width: 100%;
+        height: 100%;
+      }
+      #app a:link, #app a:visited #app a:hover, #app a:active {
+        color: #00BFFF;
+        text-decoration: none;
+      }
+      #viewer {
+        font-size: 14px;
+      }
+      h1, h2, h3, h4, h5, h6 {
+        color: white;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app"></div>
+    <script type="text/javascript">
+        require('../es5/frontend/index.js');
+    </script>
+  </body>
+</html>
