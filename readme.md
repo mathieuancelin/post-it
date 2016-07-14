@@ -1,6 +1,6 @@
 # post-it
 
-A simple electron app to take notes written with markdown
+A simple electron app to take notes written with markdown from the menubar
 
 ## Dev
 

@@ -1,7 +1,7 @@
 {
   "name": "post-it",
   "version": "1.0.0",
-  "description": "A simple electron app to take notes written with markdown",
+  "description": "A simple electron app to take notes written with markdown from the menubar",
   "main:babel": "src/es6/backend/index.js",
   "main": "src/es5/backend/index.js",
   "scripts": {
