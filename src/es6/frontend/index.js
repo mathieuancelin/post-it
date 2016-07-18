@@ -1,4 +1,4 @@
-import { ipcRenderer } from 'electron';
+import { ipcRenderer, clipboard } from 'electron';
 import showdown from 'showdown';
 import React from 'react';
 import ReactDOM from 'react-dom';
@@ -23,6 +23,7 @@ const converter = new showdown.Converter();
 // TODO : auto focus
 const MarkdownEditor = React.createClass({
   getInitialState() {
+    this.stack = [];
     return {
       text: this.props.text
     };
@@ -31,6 +32,7 @@ const MarkdownEditor = React.createClass({
     this.props.showViewer();
   },
   handleChange(e) {
+    this.stack.push(this.state.text);
     this.setState({ text: e.target.value });
   },
   save() {
@@ -41,25 +43,72 @@ const MarkdownEditor = React.createClass({
   componentDidMount() {
     this.textareaRef.focus();
   },
+  handleClick(e) {
+    if (this.selectStart) {
+      e.preventDefault();
+      this.textareaRef.selectionStart = this.selectStart;
+      this.textareaRef.selectionEnd = this.textareaRef.selectionEnd;
+    }
+  },
+  handleKeyUp() {
+    this.selectStart = null;
+  },
   handleKeyDown(e) {
-    if (e.keyCode === 27) { // z
+    if (e.keyCode === 27) { // esc
       this.showViewer();
+    }
+    if (e.keyCode === 16) {
+      // this.selectStart = this.textareaRef.selectionStart;
     }
     if (e.metaKey || e.ctrlKey) {
       if (e.keyCode === 83) { // s
         this.save();
       }
+      if (e.keyCode === 90) { // z
+        let last = this.stack.pop();
+        if (last) {
+          this.setState({ text: last });
+        }
+      }
       if (e.keyCode === 65) { // a
-        // TODO
+        e.preventDefault();
+        this.textareaRef.focus();
+        this.textareaRef.select();
       }
       if (e.keyCode === 88) { // x
-        // TODO
+        e.preventDefault();
+        let startPos = this.textareaRef.selectionStart;
+        let endPos = this.textareaRef.selectionEnd;
+        let selected = this.textareaRef.value.substring(startPos, endPos);
+        clipboard.writeText(selected);
+        this.textareaRef.value = this.textareaRef.value.substring(0, startPos)
+            + this.textareaRef.value.substring(endPos, this.textareaRef.value.length);
+        this.stack.push(this.state.text);
+        this.setState({ text: this.textareaRef.value }, () => {
+          this.textareaRef.selectionStart = startPos;
+          this.textareaRef.selectionEnd = startPos;
+        });
       }
       if (e.keyCode === 67) { // c
-        // TODO
+        e.preventDefault();
+        let startPos = this.textareaRef.selectionStart;
+        let endPos = this.textareaRef.selectionEnd;
+        let selected = this.textareaRef.value.substring(startPos, endPos);
+        clipboard.writeText(selected);
       }
       if (e.keyCode === 86) { // v
-        // TODO
+        e.preventDefault();
+        let startPos = this.textareaRef.selectionStart;
+        let endPos = this.textareaRef.selectionEnd;
+        let selected = clipboard.readText();
+        this.textareaRef.value = this.textareaRef.value.substring(0, startPos)
+            + selected
+            + this.textareaRef.value.substring(endPos, this.textareaRef.value.length);
+        this.stack.push(this.state.text);
+        this.setState({ text: this.textareaRef.value }, () => {
+          this.textareaRef.selectionStart = endPos + selected.length;
+          this.textareaRef.selectionEnd = endPos + selected.length;
+        });
       }
     }
   },
@@ -69,6 +118,8 @@ const MarkdownEditor = React.createClass({
         <textarea
           ref={(ref) => this.textareaRef = ref}
           onKeyDown={this.handleKeyDown} 
+          onKeyUp={this.handleKeyUpd} 
+          onClick={this.handleClick} 
           style={Styles.textarea}
           onChange={this.handleChange}
           value={this.state.text}></textarea>

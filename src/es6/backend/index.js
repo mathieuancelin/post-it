@@ -132,6 +132,9 @@ app.on('ready', () => {
     ipcMain.on('save-content-to-file', (evt, payload) => {
       writeFile(storeFile, payload.text, () => '');
     });
+    ipcMain.on('console.log', (evt, payload) => {
+      console.log(payload);
+    });
   }
 
   setupConfig(storeFile => {
