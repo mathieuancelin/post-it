@@ -60,9 +60,6 @@ const MarkdownEditor = React.createClass({
     if (e.keyCode === 27) { // esc
       this.showViewer();
     }
-    if (e.keyCode === 16) {
-      // this.selectStart = this.textareaRef.selectionStart;
-    }
     if (e.metaKey || e.ctrlKey) {
       if (e.keyCode === 83) { // s
         this.save();
