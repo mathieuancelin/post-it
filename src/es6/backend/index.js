@@ -93,6 +93,13 @@ app.on('ready', () => {
         }
       },
       {
+        label: 'Toogle DevTools',
+        accelerator: 'CmdOrCtrl+D',
+        click(item, focusedWindow) {
+          if (focusedWindow) focusedWindow.toggleDevTools();
+        }
+      },
+      {
         type: 'separator'
       },
       {

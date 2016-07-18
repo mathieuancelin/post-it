@@ -18,7 +18,15 @@ const Styles = {
   }
 }
 
-const converter = new showdown.Converter();
+showdown.setOption('optionKey', 'value');
+
+const converter = new showdown.Converter({
+  parseImgDimensions: true,
+  simplifiedAutoLink: true,
+  strikethrough: true,
+  tables: true,
+  tasklists: true,
+});
 
 // TODO : auto focus
 const MarkdownEditor = React.createClass({
