@@ -44,10 +44,13 @@ const MarkdownEditor = React.createClass({
     this.textareaRef.focus();
   },
   handleClick(e) {
-    if (this.selectStart) {
+    if (e.keyCode && e.keyCode === 16) {
       e.preventDefault();
-      this.textareaRef.selectionStart = this.selectStart;
-      this.textareaRef.selectionEnd = this.textareaRef.selectionEnd;
+      let start = this.textareaRef.selectionStart;
+      setTimeout(() => {
+        this.textareaRef.selectionStart = start;
+        this.textareaRef.selectionEnd = this.textareaRef.selectionEnd;
+      });
     }
   },
   handleKeyUp() {
@@ -101,6 +104,7 @@ const MarkdownEditor = React.createClass({
         let startPos = this.textareaRef.selectionStart;
         let endPos = this.textareaRef.selectionEnd;
         let selected = clipboard.readText();
+        ipcRenderer.send('console.log', `in clipboard : ${selected}`);
         this.textareaRef.value = this.textareaRef.value.substring(0, startPos)
             + selected
             + this.textareaRef.value.substring(endPos, this.textareaRef.value.length);
