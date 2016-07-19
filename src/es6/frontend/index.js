@@ -16,7 +16,7 @@ const Styles = {
     color: 'rgb(171, 178, 191)',
     backgroundColor: 'rgb(40, 44, 52)'
   }
-}
+};
 
 showdown.setOption('optionKey', 'value');
 
@@ -28,28 +28,76 @@ const converter = new showdown.Converter({
   tasklists: true,
 });
 
-// TODO : auto focus
 const MarkdownEditor = React.createClass({
   getInitialState() {
     this.stack = [];
+    this.lastSave = 0;
     return {
       text: this.props.text
     };
   },
+  componentDidMount() {
+    this.textareaRef.focus();
+  },
   showViewer() {
     this.props.showViewer();
-  },
-  handleChange(e) {
-    this.stack.push(this.state.text);
-    this.setState({ text: e.target.value });
   },
   save() {
     this.props.updateText(this.state.text);
     this.showViewer();
     ipcRenderer.send('save-content-to-file', { text: this.state.text });
   },
-  componentDidMount() {
+  getPreviousStateBackFromStack() {
+    let last = this.stack.pop();
+    if (last) {
+      this.setState({ text: last });
+    }
+  },
+  saveCurrentStateToStack(force) {
+    if (force || (Date.now() - this.lastSave > 400)) {
+      this.stack.push(this.state.text);
+      this.lastSave = Date.now();
+    }
+  },
+  selectAll() {
     this.textareaRef.focus();
+    this.textareaRef.select();
+  },
+  cut() {
+    let startPos = this.textareaRef.selectionStart;
+    let endPos = this.textareaRef.selectionEnd;
+    let selected = this.textareaRef.value.substring(startPos, endPos);
+    clipboard.writeText(selected);
+    this.textareaRef.value = this.textareaRef.value.substring(0, startPos)
+        + this.textareaRef.value.substring(endPos, this.textareaRef.value.length);
+    this.saveCurrentStateToStack(true);
+    this.setState({ text: this.textareaRef.value }, () => {
+      this.textareaRef.selectionStart = startPos;
+      this.textareaRef.selectionEnd = startPos;
+    });
+  },
+  copy() {
+    let startPos = this.textareaRef.selectionStart;
+    let endPos = this.textareaRef.selectionEnd;
+    let selected = this.textareaRef.value.substring(startPos, endPos);
+    clipboard.writeText(selected);
+  },
+  paste() {
+    let startPos = this.textareaRef.selectionStart;
+    let endPos = this.textareaRef.selectionEnd;
+    let selected = clipboard.readText();
+    this.textareaRef.value = this.textareaRef.value.substring(0, startPos)
+        + selected
+        + this.textareaRef.value.substring(endPos, this.textareaRef.value.length);
+    this.saveCurrentStateToStack(true);
+    this.setState({ text: this.textareaRef.value }, () => {
+      this.textareaRef.selectionStart = endPos + selected.length;
+      this.textareaRef.selectionEnd = endPos + selected.length;
+    });
+  },
+  handleChange(e) {
+    this.saveCurrentStateToStack();
+    this.setState({ text: e.target.value });
   },
   handleClick(e) {
     if (e.keyCode && e.keyCode === 16) {
@@ -73,51 +121,23 @@ const MarkdownEditor = React.createClass({
         this.save();
       }
       if (e.keyCode === 90) { // z
-        let last = this.stack.pop();
-        if (last) {
-          this.setState({ text: last });
-        }
+        this.getPreviousStateBackFromStack();
       }
       if (e.keyCode === 65) { // a
         e.preventDefault();
-        this.textareaRef.focus();
-        this.textareaRef.select();
+        this.selectAll();
       }
       if (e.keyCode === 88) { // x
         e.preventDefault();
-        let startPos = this.textareaRef.selectionStart;
-        let endPos = this.textareaRef.selectionEnd;
-        let selected = this.textareaRef.value.substring(startPos, endPos);
-        clipboard.writeText(selected);
-        this.textareaRef.value = this.textareaRef.value.substring(0, startPos)
-            + this.textareaRef.value.substring(endPos, this.textareaRef.value.length);
-        this.stack.push(this.state.text);
-        this.setState({ text: this.textareaRef.value }, () => {
-          this.textareaRef.selectionStart = startPos;
-          this.textareaRef.selectionEnd = startPos;
-        });
+        this.cut();
       }
       if (e.keyCode === 67) { // c
         e.preventDefault();
-        let startPos = this.textareaRef.selectionStart;
-        let endPos = this.textareaRef.selectionEnd;
-        let selected = this.textareaRef.value.substring(startPos, endPos);
-        clipboard.writeText(selected);
+        this.copy();
       }
       if (e.keyCode === 86) { // v
         e.preventDefault();
-        let startPos = this.textareaRef.selectionStart;
-        let endPos = this.textareaRef.selectionEnd;
-        let selected = clipboard.readText();
-        ipcRenderer.send('console.log', `in clipboard : ${selected}`);
-        this.textareaRef.value = this.textareaRef.value.substring(0, startPos)
-            + selected
-            + this.textareaRef.value.substring(endPos, this.textareaRef.value.length);
-        this.stack.push(this.state.text);
-        this.setState({ text: this.textareaRef.value }, () => {
-          this.textareaRef.selectionStart = endPos + selected.length;
-          this.textareaRef.selectionEnd = endPos + selected.length;
-        });
+        this.paste();
       }
     }
   },
@@ -141,17 +161,27 @@ const MarkdownViewer = React.createClass({
   showEditor() {
     this.props.showEditor();
   },
+  copy() {
+    let startPos = this.spanRef.selectionStart;
+    let endPos = this.spanRef.selectionEnd;
+    let selected = this.spanRef.value.substring(startPos, endPos);
+    clipboard.writeText(selected);
+  },
   handleKeyDown(e) {
     if (e.metaKey || e.ctrlKey) {
       if (e.keyCode === 69) {
         this.showEditor();
+      }
+      if (e.keyCode === 67) { // c
+        e.preventDefault();
+        this.copy();
       }
     }
   },
   render() {
     const html = converter.makeHtml(this.props.text);
     return (
-      <div id="viewer" onKeyDown={this.handleKeyDown} onDoubleClick={this.showEditor} style={Styles.viewer}>
+      <div id="viewer" ref={(ref) => this.spanRef = ref} onKeyDown={this.handleKeyDown} onDoubleClick={this.showEditor} style={Styles.viewer}>
         <span dangerouslySetInnerHTML={{ __html: html }} />
       </div>
     );

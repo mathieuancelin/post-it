@@ -11,6 +11,18 @@
         padding: 10;
         padding-left: 20px;
       }
+      body::-webkit-scrollbar-track {
+      	border-radius: 5px;
+      	background-color: rgb(40, 44, 52);
+      }
+      body::-webkit-scrollbar {
+      	width: 7px;
+      	background-color: rgb(40, 44, 52);
+      }
+      body::-webkit-scrollbar-thumb {
+      	border-radius: 5px;
+      	background-color: #1c1e23;
+      }
       textarea {
         font-family: Menlo, Consolas, 'DejaVu Sans Mono', monospace;
         font-size: 14px;
@@ -37,6 +49,64 @@
       ul {
         padding-left: 15px;
       }
+      table {
+        margin-top: 30px;
+        margin-bottom: 30px;
+        border: 1px solid #4b5362;
+        border-collapse: collapse;
+        border-spacing: 0;
+      }
+      thead {
+        color: white;
+        font-weight: bold;
+        box-sizing: border-box;
+      }
+      tbody {
+        box-sizing: border-box;
+        color: rgb(171, 178, 191);
+      }
+      th {
+        border-right: 1px solid #4b5362;
+        box-sizing: border-box;
+        padding: .66em 1em;
+      }
+      tr {
+        box-sizing: border-box;
+        border-bottom: 1px solid #4b5362;
+        display: table-row;
+        vertical-align: inherit;
+        border-color: inherit;
+      }
+      td {
+        box-sizing: border-box;
+        padding: .66em 1em;
+        border-right: 1px solid #4b5362;
+      }
+      pre {
+        margin-top: 30px;
+        margin-bottom: 30px;
+        padding: 1em;
+        font-size: .92em;
+        border-radius: 3px;
+        background-color: #31363f;
+        color: #abb2bf;
+        line-height: 1.5;
+      }
+      ::scrollbar-track {
+            background-color: #b46868;
+      } /* the new scrollbar will have a flat appearance with the set background color */
+
+      ::scrollbar-thumb {
+            background-color: rgba(0, 0, 0, 0.2);
+      } /* this will style the thumb, ignoring the track */
+
+      ::scrollbar-button {
+            background-color: #7c2929;
+      } /* optionally, you can style the top and the bottom buttons (left and right for horizontal bars) */
+
+      ::scrollbar-corner {
+            background-color: black;
+      } /* if both the vertical and the horizontal bars appear, then perhaps the right bottom corner also needs to be styled */
     </style>
   </head>
   <body>

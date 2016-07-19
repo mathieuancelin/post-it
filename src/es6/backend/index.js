@@ -128,6 +128,10 @@ app.on('ready', () => {
       showWindow(bounds);
     }
 
+    function logAllArgs(evt, ...params) {
+      console.log(...params);
+    }
+
     tray.on('click', (e, bounds) => {
       clicked(e, bounds);
     });
@@ -136,15 +140,13 @@ app.on('ready', () => {
     });
     tray.on('double-click', clicked);
 
+    ipcMain.on('console.log', logAllArgs);
     ipcMain.on('save-content-to-file', (evt, payload) => {
       writeFile(storeFile, payload.text, () => '');
-    });
-    ipcMain.on('console.log', (evt, payload) => {
-      console.log(payload);
     });
   }
 
   setupConfig(storeFile => {
     fullInit(storeFile);
-  })
+  });
 });
